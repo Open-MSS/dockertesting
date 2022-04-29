@@ -1,0 +1,49 @@
+name: Update Image
+
+on: 
+  push: 
+  workflow_dispatch:
+
+env:
+  IMAGE_NAME: testing-develop
+  IMAGE_PATH: openmss
+  
+jobs:     
+  test-and-publish-testing:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build image
+        run: |
+          docker build . --build-arg some_variable_name=develop --tag $IMAGE_PATH/$IMAGE_NAME:latest
+        
+
+      - name: Test image
+        timeout-minutes: 25
+        run: |
+          docker run $IMAGE_PATH/$IMAGE_NAME:latest /bin/bash -c "
+          git clone https://github.com/Open-MSS/MSS.git &&
+          cd MSS &&
+          git checkout develop &&
+          source /opt/conda/bin/activate mssenv &&
+          pytest mslib -k 'not browse_add_operation and not add_operation' \
+          || (for i in {1..5} \
+            ; do pytest mslib --last-failed --lfnf=none \
+            && break \
+          ; done)"
+
+      - name: Print conda list
+        if: ${{ always() }}
+        run: |
+          docker run $IMAGE_PATH/$IMAGE_NAME:latest /bin/bash -c "
+          source /opt/conda/bin/activate mssenv &&
+          conda list
+          "
+          
+      - name: Log into dockerhub
+        run: echo "${{ secrets.DOCKERHUB_PASSWORD }}" | nodocker login -u ${{ secrets.DOCKERHUB_ACCOUNT }} --password-stdin
+
+      - name: Push image
+        run: docker push $IMAGE_PATH/$IMAGE_NAME:latest
