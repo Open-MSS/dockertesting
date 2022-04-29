@@ -1,12 +1,21 @@
 name: Update Image
 
 on: 
-  push: 
-  workflow_dispatch:
+  workflow_call:
+    inputs:
+      branch_name:
+        required: true
+        type: string
+    secrets:
+      DOCKERHUB_ACCOUNT:
+        required: true
+      DOCKERHUB_PASSWORD:
+        required: true
 
 env:
-  IMAGE_NAME: testing-develop
   IMAGE_PATH: openmss
+  BRANCH_NAME: ${{ inputs.branch_name }}
+  IMAGE_NAME: testing-${{ inputs.branch_name }}
   
 jobs:     
   test-and-publish-testing:
@@ -17,33 +26,33 @@ jobs:
 
       - name: Build image
         run: |
-          docker build . --build-arg some_variable_name=develop --tag $IMAGE_PATH/$IMAGE_NAME:latest
+          set -x
+          docker build . --build-arg BRANCH=$BRANCH_NAME --tag $IMAGE_PATH/$IMAGE_NAME:latest
         
-
-      - name: Test image
-        timeout-minutes: 25
+      - name: Print conda list
         run: |
+          docker run $IMAGE_PATH/$IMAGE_NAME:latest /bin/bash -c "
+          source /opt/conda/bin/activate mssenv &&
+          conda list
+          "
+        
+      - name: Test image
+        timeout-minutes: 30
+        run: |
+          set -x
           docker run $IMAGE_PATH/$IMAGE_NAME:latest /bin/bash -c "
           git clone https://github.com/Open-MSS/MSS.git &&
           cd MSS &&
-          git checkout develop &&
+          git checkout $BRANCH_NAME &&
           source /opt/conda/bin/activate mssenv &&
           pytest mslib -k 'not browse_add_operation and not add_operation' \
           || (for i in {1..5} \
             ; do pytest mslib --last-failed --lfnf=none \
             && break \
           ; done)"
-
-      - name: Print conda list
-        if: ${{ always() }}
-        run: |
-          docker run $IMAGE_PATH/$IMAGE_NAME:latest /bin/bash -c "
-          source /opt/conda/bin/activate mssenv &&
-          conda list
-          "
           
       - name: Log into dockerhub
-        run: echo "${{ secrets.DOCKERHUB_PASSWORD }}" | nodocker login -u ${{ secrets.DOCKERHUB_ACCOUNT }} --password-stdin
+        run: echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u ${{ secrets.DOCKERHUB_ACCOUNT }} --password-stdin
 
       - name: Push image
         run: docker push $IMAGE_PATH/$IMAGE_NAME:latest
