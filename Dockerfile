@@ -40,8 +40,7 @@ RUN wget -O /meta.yaml -q https://raw.githubusercontent.com/Open-MSS/MSS/${BRANC
   && mamba create -y -n mssenv --file reqs.txt \
   && conda clean --all \
   && rm reqs.txt \
-  && cp /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh \
-  && echo "conda init bash" >> /etc/profile.d/conda.sh
+  && cp /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh 
 
 # execute /etc/profile also in non-interactive use
 ENV BASH_ENV /etc/profile.d/conda.sh
