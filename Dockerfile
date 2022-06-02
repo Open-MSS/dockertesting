@@ -24,11 +24,8 @@ RUN  apt-get -yqq update --fix-missing \
       xvfb \
   && apt-get -yqq clean all
 
-# ENV PATH=/opt/conda/envs/mssenv/bin:$PATH
-
 # path for data and mss_wms_settings config
 ENV PYTHONPATH="/srv/mss:/root/mss"
-# ENV PROJ_LIB="/opt/conda/envs/mssenv/share/proj"
 
 # Install requirements, fetched from the specified branch
 RUN wget -O /meta.yaml -q https://raw.githubusercontent.com/Open-MSS/MSS/${BRANCH}/localbuild/meta.yaml \
