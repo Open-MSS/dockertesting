@@ -24,11 +24,8 @@ RUN  apt-get -yqq update --fix-missing \
       xvfb \
   && apt-get -yqq clean all
 
-ENV PATH=/opt/conda/envs/mssenv/bin:$PATH
-
 # path for data and mss_wms_settings config
 ENV PYTHONPATH="/srv/mss:/root/mss"
-ENV PROJ_LIB="/opt/conda/envs/mssenv/share/proj"
 
 # Install requirements, fetched from the specified branch
 RUN wget -O /meta.yaml -q https://raw.githubusercontent.com/Open-MSS/MSS/${BRANCH}/localbuild/meta.yaml \
@@ -43,8 +40,7 @@ RUN wget -O /meta.yaml -q https://raw.githubusercontent.com/Open-MSS/MSS/${BRANC
   && mamba create -y -n mssenv --file reqs.txt \
   && conda clean --all \
   && rm reqs.txt \
-  && cp /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh \
-  && echo "conda activate mssenv" >> /etc/profile.d/conda.sh
+  && cp /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh 
 
 # execute /etc/profile also in non-interactive use
 ENV BASH_ENV /etc/profile.d/conda.sh
