@@ -11,7 +11,7 @@ MAINTAINER Reimar Bauer <rb.proj@gmail.com>
 
 # install packages for qt X
 RUN  export DEBIAN_FRONTEND=noninteractive \
-     apt-get -yqq update --fix-missing \
+  && apt-get -yqq update --fix-missing \
   && apt-get -yqq upgrade \
   && apt-get -yqq install \
       apt \
