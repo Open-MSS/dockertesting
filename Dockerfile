@@ -10,9 +10,11 @@ SHELL ["/bin/bash", "--login", "-c"]
 MAINTAINER Reimar Bauer <rb.proj@gmail.com>
 
 # install packages for qt X
-RUN  apt-get -yqq update --fix-missing \
+RUN  export DEBIAN_FRONTEND=noninteractive \
+     apt-get -yqq update --fix-missing \
   && apt-get -yqq upgrade \
   && apt-get -yqq install \
+      apt \
       apt-utils \
       libgl1-mesa-glx \
       libx11-xcb1 \
@@ -22,7 +24,8 @@ RUN  apt-get -yqq update --fix-missing \
       netbase \
       git \
       xvfb \
-  && apt-get -yqq clean all
+  && apt-get -yqq clean all \
+  && apt list --installed
 
 # path for data and mss_wms_settings config
 ENV PYTHONPATH="/srv/mss:/root/mss"

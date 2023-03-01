@@ -45,9 +45,9 @@ jobs:
           cd MSS &&
           git checkout $BRANCH_NAME &&
           source /opt/conda/bin/activate mssenv &&
-          pytest mslib -k 'not browse_add_operation and not add_operation' \
+          pytest -k 'not browse_add_operation and not add_operation' \
           || (for i in {1..5} \
-            ; do pytest mslib --last-failed --lfnf=none \
+            ; do pytest --last-failed --lfnf=none \
             && break \
           ; done)"
           
