@@ -40,7 +40,7 @@ RUN wget -O /meta.yaml -q https://raw.githubusercontent.com/Open-MSS/MSS/${BRANC
    | sed -e "s/.*://" > reqs.txt \
   && cat development.txt >> reqs.txt \
   && echo pyvirtualdisplay >> reqs.txt \
-  && mamba create -y -n mssenv --file reqs.txt \
+  && mamba create -y -n mss-${BRANCH}-env --file reqs.txt \
   && conda clean --all \
   && rm reqs.txt \
   && cp /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh 
