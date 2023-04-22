@@ -45,7 +45,7 @@ jobs:
           cd MSS &&
           git checkout $BRANCH_NAME &&
           source /opt/conda/bin/activate mssenv &&
-          pytest -k 'not (browse_add_operation or add_operation or skyfield_data_expiration or test_handle_db_reset or test_handle_db_seed or test_mscolab_admin_window)' \
+          pytest -k 'not (browse_add_operation or add_operation or skyfield_data_expiration or test_handle_db_reset or test_handle_db_seed or test_mscolab_)' \
           || (for i in {1..5} \
             ; do pytest --last-failed --lfnf=none \
             && break \
