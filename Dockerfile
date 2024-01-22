@@ -1,5 +1,5 @@
 # Set the base image ubuntu with mamba
-FROM condaforge/miniforge
+FROM condaforge/miniforge3
 
 # Sets which branch to fetch requirements from
 ARG BRANCH
