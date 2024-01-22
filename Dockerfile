@@ -43,9 +43,10 @@ RUN  wget -O /meta.yaml -q https://raw.githubusercontent.com/Open-MSS/MSS/${BRAN
   && mamba create -y -n mssenv --file reqs.txt \
   && mamba clean -y --all \
   && rm reqs.txt \
-  && cp /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh 
+  && cp /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh \
+  && cp /opt/conda/etc/profile.d/mamba.sh /etc/profile.d/mamba.sh
 
 # execute /etc/profile also in non-interactive use
-ENV BASH_ENV /etc/profile.d/conda.sh
+ENV BASH_ENV /etc/profile.d/mamba.sh
 # default command to start when run
 CMD [ "/bin/bash", "--login" ]
