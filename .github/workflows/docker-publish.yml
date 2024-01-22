@@ -1,6 +1,6 @@
 name: Update Image
 
-on: 
+on:
   workflow_call:
     inputs:
       branch_name:
@@ -16,8 +16,8 @@ env:
   IMAGE_PATH: openmss
   BRANCH_NAME: ${{ inputs.branch_name }}
   IMAGE_NAME: testing-${{ inputs.branch_name }}
-  
-jobs:     
+
+jobs:
   test-and-publish-testing:
     runs-on: ubuntu-latest
 
@@ -28,14 +28,14 @@ jobs:
         run: |
           set -x
           docker build . --build-arg BRANCH=$BRANCH_NAME --tag $IMAGE_PATH/$IMAGE_NAME:latest
-        
+
       - name: Print conda list
         run: |
           docker run $IMAGE_PATH/$IMAGE_NAME:latest /bin/bash -c "
           source /opt/conda/bin/activate mssenv &&
           conda list
           "
-        
+
       - name: Test image
         timeout-minutes: 30
         run: |
@@ -45,12 +45,12 @@ jobs:
           cd MSS &&
           git checkout $BRANCH_NAME &&
           source /opt/conda/bin/activate mssenv &&
-          pytest -k 'not (browse_add_operation or add_operation or skyfield_data_expiration or test_handle_db_reset or test_handle_db_seed or test_mscolab_)' \
+          xvfb-run pytest -k 'not (browse_add_operation or add_operation or skyfield_data_expiration or test_handle_db_reset or test_handle_db_seed or test_mscolab_)' \
           || (for i in {1..5} \
-            ; do pytest --last-failed --lfnf=none \
+            ; do xvfb-run pytest --last-failed --lfnf=none \
             && break \
           ; done)"
-          
+
       - name: Log into dockerhub
         run: echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u ${{ secrets.DOCKERHUB_ACCOUNT }} --password-stdin
 
