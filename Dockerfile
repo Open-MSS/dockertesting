@@ -31,7 +31,7 @@ RUN  export DEBIAN_FRONTEND=noninteractive \
 ENV PYTHONPATH="/srv/mss:/root/mss"
 
 # Install requirements, fetched from the specified branch
-RUN  wget -O /meta.yaml -q https://raw.githubusercontent.com/Open-MSS/MSS/${BRANCH}/localbuild/meta.yaml \
+RUN wget -O /meta.yaml -q https://raw.githubusercontent.com/Open-MSS/MSS/${BRANCH}/localbuild/meta.yaml \
   && wget -O /development.txt -q https://raw.githubusercontent.com/Open-MSS/MSS/${BRANCH}/requirements.d/development.txt \
   && cat /meta.yaml \
    | sed -n '/^requirements:/,/^test:/p' \
